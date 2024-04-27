@@ -1,4 +1,5 @@
-use sdl2::{pixels::Color, event::Event};
+use sdl2::{pixels::Color, event::Event, rect::Rect};
+use rand::seq::SliceRandom;
 
 fn main() -> Result<(), String>{
     let (screen_width, screen_height): (u32, u32) = (800, 600);
@@ -12,16 +13,21 @@ fn main() -> Result<(), String>{
     let mut canvas = window.into_canvas()
         .build()
         .unwrap();
-    // let screen_area = Rect::new(0, 0, screen_width, screen_height);
-    // let clear_color = Color::RGB(64, 192, 255);
 
     canvas.set_draw_color(Color::RGB(255, 255, 255));
     canvas.clear();
     canvas.present();
 
+    // Dummy ant
+    let mut ant: Rect = Rect::new((screen_width / 2) as i32 , (screen_height / 2) as i32, 10, 10);
+    canvas.set_draw_color(Color::RGB(72, 71, 70));
+    canvas.fill_rect(ant);
+
     let mut running = true;
     let mut event_queue = sdl_context.event_pump().unwrap();
     while running {
+        canvas.set_draw_color(Color::RGB(255, 255, 255));
+        canvas.clear();
 
         for event in event_queue.poll_iter() {
             match event {
@@ -29,6 +35,14 @@ fn main() -> Result<(), String>{
                 _ => {}
             }
         }
+
+        let opts = vec![-1, 0, 1];
+        let x = opts.choose(&mut rand::thread_rng()).unwrap();
+        let y = opts.choose(&mut rand::thread_rng()).unwrap();
+        
+        ant.offset(*x, *y);
+        canvas.set_draw_color(Color::RGB(72, 71, 70));
+        canvas.fill_rect(ant);
 
         canvas.present();
     }
