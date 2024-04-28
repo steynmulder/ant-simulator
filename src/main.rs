@@ -23,15 +23,14 @@ fn main() -> Result<(), String>{
     canvas.set_draw_color(Color::RGB(72, 71, 70));
     canvas.fill_rect(ant);
 
-    let mut running = true;
     let mut event_queue = sdl_context.event_pump().unwrap();
-    while running {
+    'running: loop {
         canvas.set_draw_color(Color::RGB(255, 255, 255));
         canvas.clear();
 
         for event in event_queue.poll_iter() {
             match event {
-                Event::Quit {..} => {running = false;},
+                Event::Quit {..} => {break 'running;},
                 _ => {}
             }
         }
