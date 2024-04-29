@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use sdl2::{pixels::Color, event::Event, rect::Rect};
 use rand::seq::SliceRandom;
+mod ant;
 
 fn main() -> Result<(), String>{
     let (screen_width, screen_height): (u32, u32) = (800, 600);
@@ -12,7 +13,7 @@ fn main() -> Result<(), String>{
         .unwrap();
 
 
-    let mut canvas = window.into_canvas()
+    let mut canvas: sdl2::render::Canvas<sdl2::video::Window> = window.into_canvas()
         .build()
         .unwrap();
 
@@ -21,9 +22,25 @@ fn main() -> Result<(), String>{
     canvas.present();
 
     // Dummy ant
-    let mut ant: Rect = Rect::new((screen_width / 2) as i32 , (screen_height / 2) as i32, 10, 10);
-    canvas.set_draw_color(Color::RGB(72, 71, 70));
-    canvas.fill_rect(ant);
+    // let mut ant: Rect = Rect::new((screen_width / 2) as i32 , (screen_height / 2) as i32, 10, 10);
+    // canvas.set_draw_color(Color::RGB(72, 71, 70));
+    // canvas.fill_rect(ant);
+    let ant1: ant::Ant = ant::Ant::new( (screen_width / 2) as i32,
+                                                (screen_height / 2) as i32,
+                                                10,
+                                                10,
+                                                Color::RGB(72, 71, 70),
+                                                1,
+                            );
+    let ant2: ant::Ant = ant::Ant::new( (screen_width / 4) as i32,
+                                            (screen_height / 4) as i32,
+                                            10,
+                                            10,
+                                            Color::RGB(172, 171, 170),
+                                            3,
+                                            );
+
+    let mut ants = [ant1, ant2];
 
     let mut event_queue = sdl_context.event_pump().unwrap();
     'running: loop {
@@ -41,9 +58,14 @@ fn main() -> Result<(), String>{
         let x = opts.choose(&mut rand::thread_rng()).unwrap();
         let y = opts.choose(&mut rand::thread_rng()).unwrap();
         
-        ant.offset(*x, *y);
-        canvas.set_draw_color(Color::RGB(72, 71, 70));
-        canvas.fill_rect(ant);
+        // ant.offset(*x, *y);
+        // canvas.set_draw_color(Color::RGB(72, 71, 70));
+        // canvas.fill_rect(ant);
+        for ant in ants.iter_mut() {
+            ant.move_ant((&x, &y));
+            ant.draw_ant(&mut canvas);
+        }
+        
 
         canvas.present();
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32/60));
